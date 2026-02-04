@@ -2,782 +2,772 @@
 <html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>种地吧·十个勤天上市之路</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>种地吧：十个勤天上市之路 (极速流畅版)</title>
+    <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
-    <!-- 引入 marked 用于解析 AI 返回的 markdown 格式文本 -->
+    <!-- Markdown 解析库 -->
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <!-- 字体 -->
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700&family=Noto+Serif+SC:wght@700&display=swap" rel="stylesheet">
+    
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700&display=swap');
-        
         body {
             font-family: 'Noto Sans SC', sans-serif;
-            background-color: #f3f4f6; /* 浅灰背景 */
-        }
-
-        /* 自定义滚动条 */
-        ::-webkit-scrollbar {
-            width: 6px;
-        }
-        ::-webkit-scrollbar-track {
-            background: #f1f1f1; 
-        }
-        ::-webkit-scrollbar-thumb {
-            background: #cbd5e1; 
-            border-radius: 3px;
-        }
-        ::-webkit-scrollbar-thumb:hover {
-            background: #94a3b8; 
-        }
-
-        .fade-in {
-            animation: fadeIn 0.5s ease-in-out;
-        }
-
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        .stat-bar-bg {
-            background-color: #e5e7eb;
-            border-radius: 999px;
-            height: 8px;
+            background-color: #f3f4f6;
+            color: #374151;
+            height: 100dvh; 
+            display: flex;
+            flex-direction: column;
             overflow: hidden;
         }
 
-        .stat-bar-fill {
-            height: 100%;
-            border-radius: 999px;
-            transition: width 0.6s ease-out;
+        /* 隐藏滚动条 */
+        .hide-scrollbar::-webkit-scrollbar { display: none; }
+        .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+
+        /* 卡片样式 */
+        .dashboard-card {
+            background-color: #ffffff;
+            border-radius: 0.75rem; 
+            border: 1px solid #e5e7eb;
+            box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+        }
+
+        /* 进度条动画 */
+        .progress-bar-fill { transition: width 0.6s cubic-bezier(0.4, 0, 0.2, 1); }
+
+        /* 选项按钮 */
+        .choice-btn {
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            border: 1px solid #e5e7eb;
+            opacity: 0; 
+            transform: translateY(10px);
+        }
+        .choice-btn.show {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        .choice-btn:active {
+            background-color: #f0fdf4;
+            border-color: #10b981;
+            transform: scale(0.98);
+        }
+        @media(hover: hover) {
+            .choice-btn:hover {
+                background-color: #f0fdf4;
+                border-color: #10b981;
+            }
         }
         
-        .card {
-            background: white;
-            border-radius: 12px;
-            box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
-            border: 1px solid #f3f4f6;
-        }
+        /* Loading 动画 */
+        .typing-dot { animation: typing 1.4s infinite ease-in-out both; }
+        .typing-dot:nth-child(1) { animation-delay: -0.32s; }
+        .typing-dot:nth-child(2) { animation-delay: -0.16s; }
+        @keyframes typing { 0%, 80%, 100% { transform: scale(0); } 40% { transform: scale(1); } }
 
-        .avatar-circle {
-            width: 32px;
-            height: 32px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 12px;
-            font-weight: bold;
-            color: white;
-        }
-
-        .choice-btn {
-            transition: all 0.2s;
-            text-align: left;
-            border: 1px solid #e5e7eb;
-        }
-        .choice-btn:hover {
-            border-color: #10b981;
-            background-color: #ecfdf5;
-            transform: translateX(4px);
-        }
-
-        /* 打字机光标效果 */
-        .typing-cursor::after {
-            content: '|';
+        /* 打字机光标 - 核心效果 */
+        .typewriter-cursor::after {
+            content: '';
+            display: inline-block;
+            width: 3px;
+            height: 1.2em;
+            background-color: #10b981; /* 翡翠绿 */
+            vertical-align: sub;
+            margin-left: 2px;
             animation: blink 1s infinite;
         }
-        @keyframes blink {
-            0%, 100% { opacity: 1; }
-            50% { opacity: 0; }
+        @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0; } }
+
+        /* 移动端吸顶状态栏 */
+        .sticky-stats {
+            position: sticky;
+            top: 0;
+            z-index: 30;
+            background-color: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(8px);
+            border-bottom: 1px solid #e5e7eb;
         }
-        
-        .modal-bg {
-            background-color: rgba(0, 0, 0, 0.5);
-            backdrop-filter: blur(4px);
+
+        /* 剧情文本优化 */
+        .prose p {
+            margin-bottom: 1.2em;
+            line-height: 1.8;
+            text-align: justify;
         }
     </style>
 </head>
-<body class="p-4 md:p-8 min-h-screen">
+<body>
 
-    <!-- 顶部工具栏 -->
-    <div class="max-w-7xl mx-auto flex justify-between items-center mb-4 px-2">
-        <h1 class="text-xl font-bold text-gray-700"><i class="fas fa-seedling text-emerald-500 mr-2"></i>十个勤天：上市之路</h1>
-        <div class="flex gap-2">
-            <button onclick="openSettings()" class="bg-white text-gray-600 px-3 py-1.5 rounded-lg border border-gray-200 hover:bg-gray-50 text-sm shadow-sm">
-                <i class="fas fa-cog mr-1"></i> 设置 (API)
-            </button>
-            <button onclick="saveGame()" class="bg-blue-50 text-blue-600 px-3 py-1.5 rounded-lg border border-blue-100 hover:bg-blue-100 text-sm shadow-sm">
-                <i class="fas fa-save mr-1"></i> 存档
-            </button>
-            <button onclick="loadGame()" class="bg-emerald-50 text-emerald-600 px-3 py-1.5 rounded-lg border border-emerald-100 hover:bg-emerald-100 text-sm shadow-sm">
-                <i class="fas fa-upload mr-1"></i> 读档
-            </button>
+    <!-- 顶部导航 -->
+    <header class="bg-white border-b border-gray-200 px-4 py-3 flex justify-between items-center flex-none z-40 shadow-sm h-14">
+        <div class="flex items-center gap-2" onclick="location.reload()">
+            <span class="text-2xl">🌾</span>
+            <h1 class="font-bold text-base md:text-lg text-gray-800 truncate">种地吧 · AI上市路</h1>
+        </div>
+        <div class="flex items-center gap-2">
+            <span id="game-date" class="text-xs font-bold text-emerald-600 bg-emerald-50 px-2 py-1 rounded whitespace-nowrap">S1 · Day 1</span>
+            
+            <div class="flex gap-1">
+                <button onclick="App.saveGame()" class="p-2 text-emerald-600 bg-emerald-50 rounded-lg active:bg-emerald-100 border border-emerald-100" title="存档">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3 3m0 0l-3-3m3 3V4" /></svg>
+                </button>
+                <button onclick="App.loadGame()" class="p-2 text-blue-600 bg-blue-50 rounded-lg active:bg-blue-100 border border-blue-100" title="读档">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" /></svg>
+                </button>
+                <button onclick="App.showSettings()" class="p-2 text-gray-500 bg-gray-50 rounded-lg active:bg-gray-100 border border-gray-100" title="设置">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- 首页 -->
+    <div id="screen-home" class="fixed inset-0 z-50 bg-[#f3f4f6] flex flex-col items-center justify-center p-6 transition-transform duration-500">
+        <div class="bg-white p-8 rounded-2xl shadow-xl w-full max-w-sm text-center border border-gray-100">
+            <div class="text-5xl mb-4 animate-bounce">🚜</div>
+            <h1 class="text-2xl font-bold text-gray-800 mb-2 font-serif">十个勤天 · 上市之路</h1>
+            <p class="text-sm text-gray-500 mb-8">AI 驱动 · 沉浸式村民日记</p>
+            
+            <div class="space-y-3">
+                <button onclick="App.startGame()" class="w-full py-3.5 bg-emerald-500 text-white rounded-xl font-bold shadow-lg shadow-emerald-200 active:scale-95 transition-transform flex items-center justify-center gap-2">
+                    <span>✨</span> 开始新旅程
+                </button>
+                <button onclick="App.loadGame(true)" class="w-full py-3 bg-white border-2 border-emerald-100 text-emerald-600 rounded-xl font-bold active:bg-emerald-50 transition-colors">
+                    📂 继续旅程 (读档)
+                </button>
+                <button onclick="App.showSettings()" class="w-full py-3 text-gray-400 text-sm hover:text-gray-600">
+                    ⚙️ API 设置
+                </button>
+            </div>
+            <div class="mt-6 text-[10px] text-gray-300">v4.4 Turbo</div>
         </div>
     </div>
 
-    <div class="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-6">
+    <!-- 主游戏界面 -->
+    <main id="main-scroll" class="flex-1 overflow-y-auto overflow-x-hidden bg-[#f3f4f6] relative w-full">
         
-        <!-- 左侧/上方主要区域 (占8列) -->
-        <div class="lg:col-span-8 space-y-6">
+        <!-- 吸顶状态栏 -->
+        <div class="sticky-stats py-2 px-3 md:hidden">
+            <div class="flex items-center justify-between gap-3 overflow-x-auto hide-scrollbar">
+                <div class="flex-shrink-0 flex flex-col items-center min-w-[70px]">
+                    <span class="text-[10px] text-gray-400">资金</span>
+                    <span id="val-funds-m" class="font-bold text-sm text-red-500 font-mono">-35w</span>
+                </div>
+                <div class="h-6 w-[1px] bg-gray-200"></div>
+                <div class="flex-1 flex gap-3 min-w-max">
+                    <div class="w-16"><div class="flex justify-between text-[10px] text-gray-500"><span>土地</span><span id="txt-land-m">20</span></div><div class="h-1.5 bg-gray-100 rounded-full mt-0.5"><div id="bar-land-m" class="bg-emerald-500 h-1.5 rounded-full" style="width: 20%"></div></div></div>
+                    <div class="w-16"><div class="flex justify-between text-[10px] text-gray-500"><span>建设</span><span id="txt-build-m">10</span></div><div class="h-1.5 bg-gray-100 rounded-full mt-0.5"><div id="bar-build-m" class="bg-blue-500 h-1.5 rounded-full" style="width: 10%"></div></div></div>
+                    <div class="w-16"><div class="flex justify-between text-[10px] text-gray-500"><span>品牌</span><span id="txt-brand-m">0</span></div><div class="h-1.5 bg-gray-100 rounded-full mt-0.5"><div id="bar-brand-m" class="bg-purple-500 h-1.5 rounded-full" style="width: 0%"></div></div></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="max-w-[1200px] mx-auto p-3 md:p-6 grid grid-cols-1 md:grid-cols-12 gap-4 md:gap-6">
             
-            <!-- 农场状态面板 -->
-            <div class="card p-6">
-                <!-- 更改标题 -->
-                <h2 class="text-lg font-bold text-gray-800 mb-4 border-l-4 border-emerald-500 pl-3">公司状态</h2>
-                <div class="grid grid-cols-2 md:grid-cols-4 gap-6 mb-4 text-center">
-                    <div>
-                        <div class="text-xs text-gray-500 mb-1">土地肥力</div>
-                        <div class="text-xl font-bold text-gray-800" id="stat-land">20</div>
-                        <div class="stat-bar-bg mt-2"><div id="bar-land" class="stat-bar-fill bg-emerald-500" style="width: 10%"></div></div>
+            <!-- 左侧内容区 -->
+            <div class="md:col-span-8 flex flex-col gap-4">
+                
+                <!-- 状态面板 (PC) -->
+                <div class="dashboard-card p-5 hidden md:block">
+                    <div class="flex justify-between items-center mb-4">
+                        <h2 class="font-bold text-gray-700">公司运营概况</h2>
+                        <span id="season-badge" class="px-2 py-1 bg-gray-100 rounded text-xs text-gray-500">开荒期</span>
                     </div>
-                    <div>
-                        <div class="text-xs text-gray-500 mb-1">基建完善度</div>
-                        <div class="text-xl font-bold text-gray-800" id="stat-build">10</div>
-                        <div class="stat-bar-bg mt-2"><div id="bar-build" class="stat-bar-fill bg-blue-500" style="width: 5%"></div></div>
+                    <div class="grid grid-cols-4 gap-4 text-center divide-x divide-gray-100 mb-6">
+                        <div><div class="text-xs text-gray-400 mb-1">土地值</div><div id="val-land" class="text-xl font-bold text-emerald-600">20</div></div>
+                        <div><div class="text-xs text-gray-400 mb-1">建设值</div><div id="val-build" class="text-xl font-bold text-blue-600">10</div></div>
+                        <div><div class="text-xs text-gray-400 mb-1">品牌值</div><div id="val-brand" class="text-xl font-bold text-purple-600">0</div></div>
+                        <div><div class="text-xs text-gray-400 mb-1">当前资金</div><div id="val-funds" class="text-xl font-bold text-red-500 font-mono">-35w</div></div>
                     </div>
-                    <div>
-                        <div class="text-xs text-gray-500 mb-1">品牌影响力</div>
-                        <div class="text-xl font-bold text-gray-800" id="stat-brand">0</div>
-                        <div class="stat-bar-bg mt-2"><div id="bar-brand" class="stat-bar-fill bg-purple-500" style="width: 0%"></div></div>
-                    </div>
-                    <div>
-                        <div class="text-xs text-gray-500 mb-1">公司资金</div>
-                        <div class="text-xl font-bold text-red-500" id="stat-money">-350,000</div>
-                        <div class="text-xs text-gray-400 mt-1">需偿还债务</div>
+                    <div class="grid grid-cols-2 gap-8">
+                        <div>
+                            <div class="flex justify-between text-xs text-gray-500 mb-1"><span>季节进度</span><span id="val-season">0%</span></div>
+                            <div class="w-full bg-gray-100 rounded-full h-2"><div id="bar-season" class="bg-emerald-400 h-2 rounded-full transition-all" style="width: 0%"></div></div>
+                        </div>
+                        <div>
+                            <div class="flex justify-between text-xs text-gray-500 mb-1"><span>上市进度 (IPO)</span><span id="val-ipo">0%</span></div>
+                            <div class="w-full bg-gray-100 rounded-full h-2"><div id="bar-ipo" class="bg-yellow-400 h-2 rounded-full transition-all" style="width: 0%"></div></div>
+                        </div>
                     </div>
                 </div>
-                <div class="grid grid-cols-2 gap-6 pt-4 border-t border-gray-100">
-                    <div>
-                        <div class="flex justify-between text-xs text-gray-500 mb-1">
-                            <span>第一季：扎根</span>
-                            <span>第三季：上市</span>
+
+                <!-- 剧情卡片 -->
+                <div class="dashboard-card flex flex-col min-h-[50vh] md:min-h-[500px] transition-all">
+                    <div class="p-4 border-b border-gray-100 bg-gray-50/50 flex justify-between items-center sticky top-0 md:static z-10 backdrop-blur-sm md:backdrop-blur-none">
+                        <h2 id="story-title" class="font-bold text-gray-800 text-lg">准备就绪</h2>
+                        <div id="loading-indicator" class="hidden flex space-x-1">
+                            <div class="w-2 h-2 bg-emerald-400 rounded-full typing-dot"></div>
+                            <div class="w-2 h-2 bg-emerald-400 rounded-full typing-dot"></div>
+                            <div class="w-2 h-2 bg-emerald-400 rounded-full typing-dot"></div>
                         </div>
-                        <div class="stat-bar-bg h-3"><div id="bar-season" class="stat-bar-fill bg-orange-400" style="width: 1%"></div></div>
-                        <div class="text-center text-xs text-gray-400 mt-1">三季总进度: <span id="text-season">0%</span></div>
                     </div>
-                    <div>
-                        <div class="flex justify-between text-xs text-gray-500 mb-1">
-                            <span>上市准备</span>
-                            <span>IPO冲刺</span>
+                    
+                    <div class="p-5 md:p-8 flex-1 flex flex-col cursor-pointer" onclick="App.tryFastForward()" title="点击任意位置跳过打字">
+                        <div id="story-content" class="prose prose-sm md:prose-base max-w-none text-gray-700 leading-8 flex-1">
+                            <p class="text-gray-400 italic text-center mt-10">一切准备就绪。<br>点击下方按钮，开始第一天的故事。</p>
                         </div>
-                        <div class="stat-bar-bg h-3"><div id="bar-ipo" class="stat-bar-fill bg-yellow-500" style="width: 0%"></div></div>
-                        <div class="text-center text-xs text-gray-400 mt-1">上市进度: <span id="text-ipo">0%</span></div>
+                        
+                        <div id="error-box" class="hidden mt-6 p-4 bg-red-50 border border-red-100 rounded-xl text-sm text-red-600 flex items-start gap-2">
+                            <span class="text-lg">⚠️</span>
+                            <div>
+                                <span id="error-msg" class="font-bold">发生错误</span>
+                                <div class="mt-2">
+                                    <button onclick="App.showSettings()" class="underline hover:text-red-800 mr-4">检查 API 设置</button>
+                                    <button onclick="App.useDemoMode()" class="underline hover:text-red-800">切换演示模式</button>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div id="start-btn-container" class="mt-10 mb-6 text-center">
+                            <button onclick="App.generateNextTurn()" class="px-8 py-3 bg-emerald-500 text-white rounded-full font-bold shadow-lg shadow-emerald-100 hover:bg-emerald-600 hover:scale-105 transition-all flex items-center gap-2 mx-auto animate-pulse">
+                                <span>▶️</span> <span id="start-btn-text">开启今日剧情</span>
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="p-4 bg-gray-50 border-t border-gray-100 rounded-b-xl">
+                        <div class="text-xs font-bold text-gray-400 uppercase tracking-wide mb-3 flex items-center gap-2">
+                            <span>行动选择</span>
+                            <div class="h-px bg-gray-200 flex-1"></div>
+                        </div>
+                        <div id="choices-container" class="space-y-3">
+                            <!-- 按钮由 JS 生成 -->
+                        </div>
                     </div>
                 </div>
             </div>
 
-            <!-- 剧情主显示区 -->
-            <div class="card p-6 min-h-[300px] relative">
-                <div class="flex items-center justify-between mb-4">
-                    <h2 class="text-lg font-bold text-gray-800 border-l-4 border-emerald-500 pl-3" id="scene-title">等待开启...</h2>
-                    <div class="flex items-center gap-2">
-                        <span id="ai-loading" class="hidden text-xs text-emerald-600 bg-emerald-50 px-2 py-1 rounded animate-pulse"><i class="fas fa-robot mr-1"></i>AI生成中...</span>
-                        <span class="text-xs bg-gray-100 text-gray-500 px-2 py-1 rounded" id="turn-count">第 0 天</span>
+            <!-- 右侧内容区 -->
+            <div class="md:col-span-4 flex flex-col gap-4 pb-6">
+                <!-- 成员好感 -->
+                <div class="dashboard-card p-4">
+                    <h3 class="font-bold text-gray-700 mb-3 text-sm">成员好感度</h3>
+                    <div id="members-list" class="flex md:flex-col gap-3 overflow-x-auto md:overflow-visible pb-2 md:pb-0 hide-scrollbar">
+                        <!-- JS生成 -->
                     </div>
+                </div>
+
+                <!-- 弹幕 -->
+                <div class="dashboard-card p-4 bg-gradient-to-br from-white to-gray-50">
+                    <h3 class="font-bold text-gray-700 mb-2 text-sm flex items-center gap-2">
+                        <span>💬</span> 村民与观众之声
+                    </h3>
+                    <div id="danmu-container" class="space-y-2 text-xs max-h-[300px] overflow-y-auto pr-1">
+                        <!-- JS生成 -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- 设置弹窗 -->
+    <div id="settings-modal" class="fixed inset-0 bg-black/60 z-50 flex items-center justify-center p-4 backdrop-blur-sm hidden opacity-0 transition-opacity duration-300">
+        <div class="bg-white rounded-xl shadow-2xl w-full max-w-md overflow-hidden transform scale-95 transition-transform duration-300">
+            <div class="p-5 border-b border-gray-100 bg-gray-50 flex justify-between items-center">
+                <h3 class="font-bold text-gray-800">AI 接口设置</h3>
+                <button onclick="App.closeSettings()" class="text-gray-400 hover:text-gray-600">✕</button>
+            </div>
+            
+            <div class="p-6 space-y-4">
+                <div id="env-warning" class="hidden bg-amber-50 p-3 rounded-lg text-xs text-amber-700 leading-5 border border-amber-100 mb-2">
+                    ⚠️ 检测到本地文件运行 (file://)。若连接失败，请使用 VS Code Live Server 运行。
+                </div>
+
+                <div>
+                    <label class="block text-xs font-bold text-gray-500 uppercase mb-1">API 地址 (Base URL)</label>
+                    <input type="text" id="api-url-input" class="w-full border border-gray-300 rounded-lg px-3 py-2.5 text-sm focus:ring-2 focus:ring-emerald-500 outline-none" placeholder="https://api.deepseek.com">
                 </div>
                 
-                <!-- 历史记录区域 (可滚动) -->
-                <div id="story-log" class="space-y-4 mb-6 max-h-[400px] overflow-y-auto pr-2 hidden custom-scroll">
-                    <!-- 历史文本将插入这里 -->
-                </div>
-
-                <!-- 当前剧情文本 -->
-                <div id="current-story" class="text-gray-700 leading-relaxed space-y-4 text-base mb-8 min-h-[100px]">
-                    <!-- 动态内容 -->
-                </div>
-
-                <!-- 随机事件提示 -->
-                <div id="event-toast" class="hidden absolute top-4 right-4 bg-yellow-50 border border-yellow-200 text-yellow-800 px-4 py-2 rounded-lg shadow-sm text-sm flex items-center gap-2 animate-bounce z-10">
-                    <i class="fas fa-exclamation-circle"></i>
-                    <span id="event-text">突发暴雨！土地值下降！</span>
-                </div>
-                
-                <!-- 存档提示 -->
-                <div id="save-toast" class="hidden absolute top-4 left-1/2 transform -translate-x-1/2 bg-gray-800 text-white px-4 py-2 rounded-lg shadow-lg text-sm z-20">
-                    <i class="fas fa-check-circle mr-1"></i> <span id="save-msg">游戏已保存</span>
-                </div>
-            </div>
-
-            <!-- 选项区域 -->
-            <div class="card p-6">
-                <h3 class="text-md font-bold text-gray-700 mb-3">你可以选择...</h3>
-                <div id="choices-container" class="space-y-3">
-                    <div class="text-sm text-gray-400 italic">请先点击开始游戏...</div>
-                </div>
-            </div>
-
-        </div>
-
-        <!-- 右侧侧边栏 (占4列) -->
-        <div class="lg:col-span-4 space-y-6">
-            
-            <!-- 成员好感度 -->
-            <div class="card p-6">
-                <h2 class="text-lg font-bold text-gray-800 mb-4 border-l-4 border-emerald-500 pl-3">成员状态</h2>
-                <div class="space-y-4 max-h-[500px] overflow-y-auto pr-2" id="members-list">
-                    <!-- 成员列表动态生成 -->
-                </div>
-            </div>
-
-            <!-- 社交媒体/村民吐槽 -->
-            <div class="card p-6 bg-gray-50">
-                <h2 class="text-md font-bold text-gray-800 mb-3 border-l-4 border-emerald-500 pl-3">村民与观众之声</h2>
-                <div id="social-feed" class="space-y-3">
-                    <!-- 动态评论 -->
-                    <div class="bg-white p-3 rounded shadow-sm border border-gray-100 text-sm">
-                        <div class="font-bold text-gray-600 mb-1">系统</div>
-                        <div class="text-gray-500">等待连接后陡门数据...</div>
-                    </div>
-                </div>
-            </div>
-
-        </div>
-    </div>
-
-    <!-- 模态框：设置 (API) -->
-    <div id="settings-modal" class="hidden fixed inset-0 modal-bg flex items-center justify-center z-[70]">
-        <div class="bg-white rounded-xl p-6 max-w-md w-full shadow-2xl m-4">
-            <h3 class="text-lg font-bold text-gray-800 mb-4 flex items-center gap-2">
-                <i class="fas fa-robot text-emerald-500"></i> AI 游戏大师设置
-            </h3>
-            <div class="space-y-4">
                 <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-1">API Base URL</label>
-                    <input type="text" id="api-url" placeholder="https://api.openai.com/v1" class="w-full border border-gray-300 rounded px-3 py-2 text-sm focus:ring-2 focus:ring-emerald-500 outline-none">
-                    <p class="text-xs text-gray-400 mt-1">例如: https://api.deepseek.com/v1 或其他兼容OpenAI格式的地址</p>
+                    <label class="block text-xs font-bold text-gray-500 uppercase mb-1">API Key</label>
+                    <input type="password" id="api-key-input" class="w-full border border-gray-300 rounded-lg px-3 py-2.5 text-sm focus:ring-2 focus:ring-emerald-500 outline-none" placeholder="sk-...">
                 </div>
+
                 <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-1">API Key</label>
-                    <input type="password" id="api-key" placeholder="sk-..." class="w-full border border-gray-300 rounded px-3 py-2 text-sm focus:ring-2 focus:ring-emerald-500 outline-none">
+                    <label class="block text-xs font-bold text-gray-500 uppercase mb-1">模型名称 (Model)</label>
+                    <input type="text" id="api-model-input" class="w-full border border-gray-300 rounded-lg px-3 py-2.5 text-sm focus:ring-2 focus:ring-emerald-500 outline-none" value="deepseek-chat">
                 </div>
-                <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-1">Model Name</label>
-                    <input type="text" id="api-model" placeholder="gpt-4o / deepseek-chat" class="w-full border border-gray-300 rounded px-3 py-2 text-sm focus:ring-2 focus:ring-emerald-500 outline-none">
-                </div>
+
+                <div id="test-result" class="text-xs text-center h-auto min-h-[1rem] whitespace-pre-wrap break-words"></div>
             </div>
-            <div class="mt-6 flex justify-end gap-3">
-                <button onclick="closeSettings()" class="px-4 py-2 text-gray-600 text-sm hover:bg-gray-100 rounded">取消</button>
-                <button onclick="saveSettings()" class="px-4 py-2 bg-emerald-500 text-white text-sm rounded hover:bg-emerald-600 shadow-sm">保存并连接</button>
+
+            <div class="p-5 border-t border-gray-100 bg-gray-50 flex gap-3">
+                <button onclick="App.testConnection()" class="px-4 py-2.5 bg-white border border-gray-300 text-gray-700 rounded-lg text-sm font-bold flex-1 hover:bg-gray-50">测试连接</button>
+                <button onclick="App.saveAndStart()" class="px-4 py-2.5 bg-emerald-600 text-white rounded-lg text-sm font-bold flex-1 hover:bg-emerald-700 shadow-md">保存设置</button>
+            </div>
+            <div class="px-5 pb-4 bg-gray-50 text-center">
+                <button onclick="App.useDemoMode()" class="text-xs text-gray-400 underline hover:text-gray-600">无法连接？切换至演示模式</button>
             </div>
         </div>
     </div>
 
-    <!-- 开场介绍模态框 -->
-    <div id="intro-modal" class="fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center z-[60] backdrop-blur-sm px-4">
-        <div class="bg-white rounded-xl p-8 max-w-lg w-full shadow-2xl transform transition-all scale-100">
-            <div class="text-center mb-6">
-                <div class="inline-flex items-center justify-center w-16 h-16 rounded-full bg-emerald-100 text-emerald-600 mb-4">
-                    <i class="fas fa-seedling text-2xl"></i>
-                </div>
-                <h2 class="text-2xl font-bold text-gray-800">欢迎来到后陡门</h2>
-                <p class="text-emerald-600 font-medium mt-1">种地吧·十个勤天上市之路</p>
-            </div>
-            
-            <div class="space-y-4 text-gray-600 text-sm leading-relaxed text-left bg-gray-50 p-4 rounded-lg border border-gray-100">
-                <p><span class="font-bold text-gray-800"><i class="fas fa-user-tag mr-1"></i> 你的身份：</span> 后陡门原生村民，熟悉这片土地特质和周边人脉。</p>
-                <p><span class="font-bold text-gray-800"><i class="fas fa-exclamation-triangle mr-1"></i> 当前困境：</span> 十个少年刚抵达村子，公司负债 <span class="text-red-500 font-bold">-350,000</span> 元。</p>
-                <p><span class="font-bold text-gray-800"><i class="fas fa-flag-checkered mr-1"></i> 核心目标：</span> 协助他们度过难关，最终实现<span class="text-emerald-600 font-bold">公司上市</span>。</p>
-                <p class="text-xs text-gray-400 mt-2 border-t border-gray-200 pt-2">
-                    * 推荐点击上方“设置”配置API Key，体验AI生成的无限剧情。否则将运行演示版剧情。
-                </p>
-            </div>
-
-            <button onclick="startGame()" class="mt-8 w-full bg-emerald-500 hover:bg-emerald-600 text-white font-bold py-3 px-4 rounded-lg transition-colors shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 flex items-center justify-center gap-2">
-                <span>开启助农之旅</span>
-                <i class="fas fa-arrow-right"></i>
-            </button>
-        </div>
-    </div>
-
-    <!-- 游戏结束模态框 -->
-    <div id="game-over-modal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 px-4">
-        <div class="bg-white rounded-xl p-8 max-w-lg w-full shadow-2xl text-center">
-            <h2 id="end-title" class="text-3xl font-bold mb-4 text-gray-800">结局</h2>
-            <p id="end-desc" class="text-gray-600 mb-8 leading-relaxed">...</p>
-            <button onclick="location.reload()" class="bg-emerald-500 text-white px-6 py-2 rounded hover:bg-emerald-600 transition">重新开始</button>
-        </div>
+    <!-- Toast 提示 -->
+    <div id="toast" class="fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-black/80 text-white px-6 py-3 rounded-xl shadow-lg text-sm z-[60] hidden opacity-0 transition-opacity flex items-center gap-2">
+        <span id="toast-icon">✅</span> <span id="toast-msg">提示信息</span>
     </div>
 
     <script>
-        // --- 1. 系统常量与 Prompt ---
-        const SYSTEM_PROMPT = `
-你是一个文字冒险游戏引擎。当前游戏是《种地吧·十个勤天上市之路》。
-玩家扮演：后陡门原生村民。
-核心目标：帮助十个勤天（蒋敦豪、鹭卓、李耕耘、李昊、赵一博、卓沅、赵小童、何浩楠、陈少熙、王一珩）从第一季开荒到第三季公司上市。
-风格：温暖、治愈、真实农耕、偶尔幽默。
-核心数值：
-- 土地值(0-300)
-- 建设值(0-300)
-- 品牌值(0-300)
-- 资金(初始-350000)
-- 季节进度(0-100%)
-- 上市进度(0-100%)
-- 成员好感度(0-100)
-
-请根据玩家的上一轮选择和当前状态，生成下一段剧情。
-请务必返回合法的 JSON 格式，不要包含markdown代码块标记。格式如下：
-{
-  "title": "场景标题",
-  "text": "场景描述HTML内容（包含对话、环境描写、成员反应）",
-  "options": [
-    {
-      "text": "选项描述",
-      "desc": "预期后果提示（如：李耕耘好感+，资金-）",
-      "effect": {
-        "land": 5, "build": 0, "brand": 0, "money": -200, "season": 2, "ipo": 0,
-        "members": [{"id": "gengyun", "delta": 5}] // 可选
-      }
-    }
-  ],
-  "social_comment": {"user": "网友/村民", "content": "一句话吐槽"}
-}
-确保剧情连贯，贴合《种地吧》节目真实人设（如蒋敦豪统筹、李耕耘基建、李昊管钱、赵一博规划等）。
-`;
-
-        // --- 2. 游戏数据 ---
-        let members = [
-            { id: 'dunhao', name: '蒋敦豪', role: '董事长', color: 'bg-emerald-600', score: 20 },
-            { id: 'luzhuo', name: '鹭卓', role: '董事/音乐', color: 'bg-pink-500', score: 20 },
-            { id: 'gengyun', name: '李耕耘', role: '董事/基建', color: 'bg-stone-600', score: 20 },
-            { id: 'lihao', name: '李昊', role: '财务/宣传', color: 'bg-yellow-500', score: 20 },
-            { id: 'yibo', name: '赵一博', role: '秘书/规划', color: 'bg-blue-500', score: 20 },
-            { id: 'zhuoyuan', name: '卓沅', role: '总经理', color: 'bg-indigo-500', score: 20 },
-            { id: 'xiaotong', name: '赵小童', role: '后勤部长', color: 'bg-orange-500', score: 20 },
-            { id: 'haonan', name: '何浩楠', role: '监事/商务', color: 'bg-cyan-500', score: 20 },
-            { id: 'shaoxi', name: '陈少熙', role: '公关/水产', color: 'bg-teal-500', score: 20 },
-            { id: 'yiheng', name: '王一珩', role: '创意/保卫', color: 'bg-red-400', score: 20 },
+        // === 游戏数据 ===
+        const MEMBERS = [
+            { id: 'dunhao', name: '蒋敦豪', color: 'bg-blue-500' }, { id: 'luzhuo', name: '鹭卓', color: 'bg-pink-500' },
+            { id: 'gengyun', name: '李耕耘', color: 'bg-stone-600' }, { id: 'lihao', name: '李昊', color: 'bg-yellow-500' },
+            { id: 'yibo', name: '赵一博', color: 'bg-indigo-500' }, { id: 'zhuoyuan', name: '卓沅', color: 'bg-emerald-500' },
+            { id: 'xiaotong', name: '赵小童', color: 'bg-orange-500' }, { id: 'haonan', name: '何浩楠', color: 'bg-cyan-500' },
+            { id: 'shaoxi', name: '陈少熙', color: 'bg-teal-500' }, { id: 'yiheng', name: '王一珩', color: 'bg-rose-500' }
         ];
 
-        let gameState = {
-            day: 1,
-            sceneId: 'start',
-            land: 20,
-            build: 10,
-            brand: 0,
-            money: -350000,
-            seasonProgress: 0,
-            ipoProgress: 0,
-            history: [] 
-        };
-
-        let apiConfig = {
-            url: '',
-            key: '',
-            model: ''
-        };
-
-        // --- 3. 预设剧情 (Demo模式) ---
-        const hardcodedScenes = {
-            'start': {
-                title: '初入后陡门',
-                text: `<p>阳光透过薄雾洒在后陡门那片久未打理的农田上。你，作为村里的老人，看着眼前这片熟悉又陌生的土地，心中五味杂陈。远处，一辆大巴车缓缓驶来，停在了那栋破旧的宿舍楼前。</p><p>车门打开，十个年轻人背着行李走了下来。他们的眼神里既有对未知的迷茫，也有初来乍到的热忱。蒋敦豪走在最前面，似乎在努力组织大家。李耕耘已经开始撸起袖子，跃跃欲试。</p><p>一阵风吹过，带来了泥土的气息。你走上前去，微笑着向这群“都市青年”打了招呼。</p>`,
-                options: [
-                    { text: '微笑着上前迎接，简单介绍村子和土地情况', desc: '蒋敦豪亲密度+5, 全员亲密度+2', next: 'debt_reveal', effect: { members: [{id:'dunhao',delta:5}], all:2, season:1 } },
-                    { text: '严肃指出这片地不好种，提醒他们要有心理准备', desc: '李耕耘亲密度+5, 土地认知提升', next: 'debt_reveal', effect: { members: [{id:'gengyun',delta:5}], land:5, season:1 } },
-                    { text: '询问他们有没有带够钱，这行烧钱得很', desc: '何浩楠亲密度+5, 开启商业话题', next: 'debt_reveal', effect: { members: [{id:'haonan',delta:5}], season:1 } }
-                ]
-            },
-            'debt_reveal': {
-                title: '三十五万的负债',
-                text: `<p>大家刚放下行李，一个现实的问题摆在了面前。为了启动这个项目，购买农机、种子和化肥，公司账户上不仅没钱，还背负了35万的债务。</p><p>李昊看着财务报表，眉头紧锁：“兄弟们，我们现在是负资产开局啊。”气氛一时有些凝重。赵一博在旁边拿笔快速计算着什么。</p>`,
-                options: [
-                    { text: '鼓励大家：“只要肯干，土里能刨出金子。”', desc: '全员士气提升，品牌值+2', next: 'fertilizer', effect: { brand:2, all:1 } },
-                    { text: '建议先通过直播预热，看能不能拉点赞助。', desc: '李昊亲密度+5, 资金+2000', next: 'fertilizer', effect: { members:[{id:'lihao',delta:5}], money:2000 } }
-                ]
-            },
-            'fertilizer': {
-                title: '名场面：30吨有机肥',
-                text: `<p>30吨有机肥运到了路口，卡车进不来。如果不及时搬运，明天的雨会把肥料冲走。看着堆积如山的肥料袋，空气中弥漫着刺鼻的味道。</p>`,
-                options: [
-                    { text: '协助蒋敦豪统筹分工，形成流水线搬运。', desc: '蒋敦豪+5, 建设值+3', next: 'season_2_start', effect: { members:[{id:'dunhao',delta:5}], build:3, season:5 } },
-                    { text: '加入李耕耘、卓沅的搬运突击队，直接扛！', desc: '体力消耗大，李耕耘、卓沅+5', next: 'season_2_start', effect: { members:[{id:'gengyun',delta:5}, {id:'zhuoyuan',delta:5}], land:5, season:5 } }
-                ]
-            },
-            'season_2_start': { // 简化版Demo直接跳到这
-                title: '演示版结束点',
-                text: `<p>（这是内置演示剧情的终点。如果配置了API Key，游戏将在此处根据你的选择无限生成新的剧情，涵盖第二季、第三季直至上市。）</p>`,
-                options: [
-                    { text: '配置API继续游戏', desc: '打开设置面板', action: openSettings },
-                    { text: '重新开始', desc: '回到起点', action: () => location.reload() }
-                ]
+        const DEMO_SCENARIOS = [
+            {
+                title: "🚜 30吨的极限挑战",
+                story: "今天是来到后陡门的第六天。30吨有机肥运到了村口，路太窄车进不来。\n\n“这怎么搬啊...” 鹭卓看着堆积如山的肥料，眉头紧锁。\n\n“别废话了，干就完了！”李耕耘二话不说，咬牙扛起了一袋。\n\n天色渐暗，寒风刺骨。如果今晚搬不完，这批肥料可能会受潮失效。看着他们满头大汗、步履蹒跚的样子，你决定做点什么。",
+                choices: [
+                    { text: "💪 主动帮忙搬运", hint: "增加全员好感", impact: { land: 5, aff: { all: 2 } } },
+                    { text: "🛺 借出自家三轮车", hint: "基建值+5", impact: { build: 5, aff: { dunhao: 5 } } },
+                    { text: "🍵 送去热水姜汤", hint: "恢复体力", impact: { aff: { xiaotong: 5, zhuoyuan: 5 } } }
+                ],
+                danmu: [{u:"村民老王",c:"这群娃能行吗？🤔"}, {u:"真爱粉",c:"心疼耕耘的腰！😭"}]
             }
-        };
+        ];
 
-        // --- 4. 工具函数 ---
+        // === 核心逻辑 ===
+        const App = {
+            config: { apiUrl: 'https://api.deepseek.com', apiKey: '', model: 'deepseek-chat' },
+            state: { 
+                day: 1, season: "开荒期", funds: -350000, land: 20, build: 10, brand: 0, seasonProgress: 0, ipoProgress: 0, 
+                members: {}, lastStoryData: null 
+            },
+            isDemo: false,
+            isTyping: false,
+            typewriterTimer: null,
+            currentFullHtml: '',
+            onTypewriterComplete: null,
 
-        // 打字机效果
-        async function typeWriter(elementId, htmlContent, speed = 15) {
-            const element = document.getElementById(elementId);
-            if (!element) return;
-            
-            element.innerHTML = '';
-            element.classList.add('typing-cursor');
-            
-            // 简单的HTML解析：将标签作为一个整体，文本逐字显示
-            // 使用正则分割标签和文本
-            const parts = htmlContent.split(/(<[^>]*>)/g);
-            
-            for (let part of parts) {
-                if (part.startsWith('<') && part.endsWith('>')) {
-                    // 是标签，直接添加
-                    element.innerHTML += part;
-                } else {
-                    // 是文本，逐字打印
-                    for (let char of part) {
-                        element.innerHTML += char;
-                        // 滚动到底部
-                        const container = document.getElementById('story-log').parentElement;
-                        // 只有当文本块较长时才暂停，避免卡顿
-                        if (Math.random() > 0.5) await new Promise(r => setTimeout(r, speed)); 
+            init() {
+                MEMBERS.forEach(m => this.state.members[m.id] = 20);
+                if (window.location.protocol === 'file:') document.getElementById('env-warning').classList.remove('hidden');
+                
+                const savedConfig = localStorage.getItem('hdm_config_v2');
+                if (savedConfig) {
+                    this.config = JSON.parse(savedConfig);
+                    document.getElementById('api-url-input').value = this.config.apiUrl;
+                    document.getElementById('api-key-input').value = this.config.apiKey;
+                    document.getElementById('api-model-input').value = this.config.model;
+                }
+            },
+
+            startGame() {
+                document.getElementById('screen-home').style.transform = 'translateY(-100%)';
+                this.state = { 
+                    day: 1, season: "开荒期", funds: -350000, land: 20, build: 10, brand: 0, seasonProgress: 0, ipoProgress: 0, 
+                    members: {}, lastStoryData: null 
+                };
+                MEMBERS.forEach(m => this.state.members[m.id] = 20);
+                this.updateUI();
+                
+                document.getElementById('start-btn-container').classList.remove('hidden');
+                document.getElementById('start-btn-text').innerText = "开启今日剧情";
+                document.getElementById('story-title').innerText = "新的篇章";
+                document.getElementById('story-content').innerHTML = "<p class='text-gray-500 text-center mt-10'>一切准备就绪。<br>点击下方按钮，开始第一天的故事。</p>";
+                document.getElementById('choices-container').innerHTML = '';
+            },
+
+            // --- API & 设置 ---
+            showSettings() {
+                const el = document.getElementById('settings-modal');
+                el.classList.remove('hidden');
+                setTimeout(() => { el.classList.remove('opacity-0'); el.children[0].classList.remove('scale-95'); }, 10);
+            },
+
+            closeSettings() {
+                const el = document.getElementById('settings-modal');
+                el.classList.add('opacity-0');
+                el.children[0].classList.add('scale-95');
+                setTimeout(() => el.classList.add('hidden'), 300);
+            },
+
+            async testConnection() {
+                const resEl = document.getElementById('test-result');
+                resEl.innerHTML = '<span class="text-gray-500">连接中...</span>';
+                
+                let url = document.getElementById('api-url-input').value.trim().replace(/\/$/, '');
+                if (!url.includes('/chat/completions')) {
+                    if (!url.endsWith('/v1')) url += '/v1';
+                    url += '/chat/completions';
+                }
+                const key = document.getElementById('api-key-input').value.trim();
+                const model = document.getElementById('api-model-input').value.trim();
+
+                if(!key) { resEl.innerHTML = '<span class="text-red-500 font-bold">❌ 请先输入 API Key</span>'; return; }
+
+                try {
+                    const res = await fetch(url, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${key}` },
+                        body: JSON.stringify({
+                            model: model,
+                            messages: [{ role: 'user', content: 'Hi JSON' }],
+                            max_tokens: 5,
+                            response_format: { type: "json_object" }
+                        })
+                    });
+                    
+                    if (res.ok) {
+                        resEl.innerHTML = '<span class="text-green-600 font-bold">✅ 连接成功！</span>';
+                    } else {
+                        const err = await res.status;
+                        resEl.innerHTML = `<span class="text-red-500 font-bold">❌ 错误代码: ${err}</span>`;
                     }
+                } catch (e) {
+                    resEl.innerHTML = '<span class="text-red-500 font-bold">❌ 网络错误</span>';
                 }
-            }
-            element.classList.remove('typing-cursor');
-        }
+            },
 
-        // 显示Toast
-        function showToast(id, text) {
-            const toast = document.getElementById(id);
-            if(text) toast.querySelector('span').innerText = text;
-            toast.classList.remove('hidden');
-            setTimeout(() => toast.classList.add('hidden'), 3000);
-        }
+            saveAndStart() {
+                let url = document.getElementById('api-url-input').value.trim().replace(/\/$/, '');
+                const key = document.getElementById('api-key-input').value.trim();
+                const model = document.getElementById('api-model-input').value.trim();
+                if (!key) { alert("请输入 API Key"); return; }
+                this.config = { apiUrl: url, apiKey: key, model: model };
+                localStorage.setItem('hdm_config_v2', JSON.stringify(this.config));
+                this.isDemo = false;
+                this.closeSettings();
+                this.showToast("设置已保存", "✅");
+            },
 
-        // 存档读档
-        function saveGame() {
-            const saveObj = {
-                state: gameState,
-                members: members,
-                timestamp: new Date().getTime()
-            };
-            localStorage.setItem('sg_save_data', JSON.stringify(saveObj));
-            showToast('save-toast', '游戏进度已保存');
-        }
+            useDemoMode() {
+                this.isDemo = true;
+                this.closeSettings();
+                this.startGame();
+            },
 
-        function loadGame() {
-            const saved = localStorage.getItem('sg_save_data');
-            if (!saved) {
-                alert('未找到本地存档！');
-                return;
-            }
-            try {
-                const data = JSON.parse(saved);
-                gameState = data.state;
-                members = data.members;
-                renderStats();
-                renderMembers();
-                
-                // 恢复场景
-                // 如果是AI生成的场景，需要重新渲染当前的文本
-                // 由于我们没有保存完整的当前场景对象，这里简单处理：
-                // 如果是固定场景ID，重新加载。如果是AI生成的(unknown id)，可能需要保存上一条完整内容。
-                // 简化版：我们假设gameState.sceneId如果不在hardcoded中，可能无法完美恢复文本，
-                // 但为了体验，我们在saveObj里其实应该保存 currentSceneContent
-                
-                // 重新载入时，刷新界面显示最后一幕
-                document.getElementById('current-story').innerHTML = "<p><i>（读档成功，请继续选择...）</i></p>"; 
-                // 注意：这里有一个缺陷，读档后丢失了当前场景的文本和选项。
-                // 改进：我们应该在save时保存currentSceneData
-                // 但因为代码结构限制，这里暂时只能提示用户继续。
-                // 更好的做法是保存上一次的 API Response。
-                
-                // 简单修复：读档后，如果场景在hardcoded里，重新load。如果不在，显示通用提示。
-                if (hardcodedScenes[gameState.sceneId]) {
-                    loadHardcodedScene(gameState.sceneId);
+            // --- 存档/读档 ---
+            saveGame() {
+                localStorage.setItem('hdm_save_data', JSON.stringify(this.state));
+                this.showToast("存档成功", "💾");
+            },
+
+            loadGame(fromHome = false) {
+                const data = localStorage.getItem('hdm_save_data');
+                if (data) {
+                    this.state = JSON.parse(data);
+                    if (fromHome) document.getElementById('screen-home').style.transform = 'translateY(-100%)';
+                    this.updateUI();
+                    
+                    if (this.state.lastStoryData) {
+                        this.renderTurn(this.state.lastStoryData);
+                        document.getElementById('start-btn-container').classList.add('hidden');
+                    } else {
+                        document.getElementById('story-title').innerText = "读取成功";
+                        document.getElementById('story-content').innerHTML = "<p class='text-gray-500 text-center mt-10'>进度已恢复。<br>点击下方按钮继续。</p>";
+                        document.getElementById('start-btn-container').classList.remove('hidden');
+                        document.getElementById('start-btn-text').innerText = "继续剧情";
+                        document.getElementById('choices-container').innerHTML = '';
+                    }
+                    this.showToast("读档成功", "📂");
                 } else {
-                     alert('读取了AI模式的存档。由于未缓存场景内容，请点击设置重新连接AI，或等待下一次生成。');
+                    this.showToast("暂无存档", "⚠️");
                 }
+            },
+
+            showToast(msg, icon) {
+                const t = document.getElementById('toast');
+                document.getElementById('toast-msg').innerText = msg;
+                document.getElementById('toast-icon').innerText = icon;
+                t.classList.remove('hidden', 'opacity-0');
+                setTimeout(() => { t.classList.add('opacity-0'); setTimeout(() => t.classList.add('hidden'), 300); }, 2000);
+            },
+
+            // --- 核心生成 ---
+            extractJSON(str) {
+                try { return JSON.parse(str); } catch (e) {
+                    const match = str.match(/```json([\s\S]*?)```/);
+                    if (match) try { return JSON.parse(match[1]); } catch(e2){}
+                    const s = str.indexOf('{'), e2 = str.lastIndexOf('}');
+                    if (s!==-1 && e2!==-1) try { return JSON.parse(str.substring(s, e2+1)); } catch(e3){}
+                    throw new Error("无法提取 JSON");
+                }
+            },
+
+            async generateNextTurn(lastChoice = null) {
+                this.setLoading(true);
+                document.getElementById('start-btn-container').classList.add('hidden');
+                document.getElementById('error-box').classList.add('hidden');
+
+                if (this.isDemo) {
+                    await new Promise(r => setTimeout(r, 800));
+                    const data = DEMO_SCENARIOS[0];
+                    this.state.lastStoryData = data;
+                    this.renderTurn({ ...data, title: `Day ${this.state.day}: ${data.title}` });
+                    this.setLoading(false);
+                    return;
+                }
+
+                try {
+                    const prompt = this.buildPrompt(lastChoice);
+                    const data = await this.callLLM(prompt);
+                    this.state.lastStoryData = data;
+                    this.renderTurn(data);
+                    localStorage.setItem('hdm_autosave', JSON.stringify(this.state)); // 自动存档
+                } catch (e) {
+                    console.error(e);
+                    document.getElementById('error-box').classList.remove('hidden');
+                    document.getElementById('error-msg').innerText = `生成失败: ${e.message}`;
+                    // 恢复按钮以便重试
+                    document.getElementById('start-btn-container').classList.remove('hidden');
+                    document.getElementById('start-btn-text').innerText = "重试";
+                } finally {
+                    this.setLoading(false);
+                }
+            },
+
+            buildPrompt(lastChoice) {
+                return `
+                你是一个基于综艺《种地吧》的游戏剧情生成器。请返回纯 JSON。
+                【当前状态】
+                时间：Day ${this.state.day}
+                资金：${this.state.funds}元
+                上一轮选择：${lastChoice ? lastChoice.text : '无'}
                 
-                showToast('save-toast', '读取成功');
-            } catch (e) {
-                console.error(e);
-                alert('存档文件损坏');
-            }
-        }
+                【任务】
+                1. 生成标题 (title): 简短有力，必须带一个 Emoji。
+                2. 生成剧情 (story): **请生成一段 200-300 字的长剧情**。
+                   - **重要规则：对话必须使用双引号“”包裹**。例如：“我也来帮忙！”李耕耘喊道。
+                   - **格式**：Markdown，**多使用双换行分段**，保持排版清晰。
+                   - **内容**：拒绝流水账，要有具体的环境描写（天气、光线、气味）、成员的具体动作和对话（还原性格口头禅）。
+                   - **代入感**：你是住在隔壁的热心邻居，用第一人称观察者的视角细腻描写。
+                3. 生成选项 (choices): 2-3个，包含 text(描述), hint(提示), impact(影响数值: funds, land, build, brand)。
+                4. 生成弹幕 (danmu): 2条，u为用户名，c为内容。
 
-        // --- 5. 逻辑控制 ---
-
-        function initGame() {
-            // 尝试读取本地API配置
-            const savedConfig = localStorage.getItem('sg_api_config');
-            if (savedConfig) {
-                apiConfig = JSON.parse(savedConfig);
-                document.getElementById('api-url').value = apiConfig.url;
-                document.getElementById('api-key').value = apiConfig.key;
-                document.getElementById('api-model').value = apiConfig.model;
-            }
-
-            renderMembers();
-            renderStats();
-        }
-
-        function startGame() {
-            const modal = document.getElementById('intro-modal');
-            modal.style.opacity = '0';
-            setTimeout(() => {
-                modal.classList.add('hidden');
-                // 开始游戏逻辑
-                processScene('start'); 
-                addSocialComment('村长', '听说来了群城里娃娃，不知道能坚持几天。');
-            }, 500);
-        }
-
-        // 统一场景处理器
-        async function processScene(sceneId, userChoiceText = '') {
-            // 1. 如果配置了API，且不是游戏开始（开始总是固定的，或者也可以让AI生成第一幕，这里保留固定开头作为引导）
-            // 为了平滑过渡，如果sceneId是'start'，我们强制使用固定开局
-            if (sceneId === 'start') {
-                loadHardcodedScene('start');
-                return;
-            }
-
-            // 2. 检查API配置
-            if (apiConfig.key && apiConfig.url) {
-                await generateAIScene(userChoiceText);
-            } else {
-                // 3. 回退到固定剧情
-                if (hardcodedScenes[sceneId]) {
-                    loadHardcodedScene(sceneId);
-                } else {
-                    // 如果没有固定剧情了（Demo结束）
-                    loadHardcodedScene('season_2_start');
+                【JSON格式示例】
+                {
+                    "title": "⛈️ 突发暴雨",
+                    "story": "午后的天空突然阴沉下来...\\n\\n“不好！大棚的膜没压实！”李耕耘扔下饭碗就往外冲，声音里透着焦急。\\n\\n赵一博紧随其后：“大家快带上工具！”...",
+                    "choices": [
+                        { "text": "🏃‍♂️ 冲进雨里帮忙", "hint": "建设+5", "impact": { "build": 5 } }
+                    ],
+                    "danmu": [{ "u": "粉丝", "c": "注意安全啊！🙏" }]
                 }
-            }
-        }
+                `;
+            },
 
-        function loadHardcodedScene(sceneId) {
-            const scene = hardcodedScenes[sceneId];
-            if (!scene) return;
-            gameState.sceneId = sceneId;
-            renderSceneUI(scene);
-        }
+            async callLLM(prompt) {
+                let url = this.config.apiUrl.replace(/\/$/, '');
+                if (!url.includes('/chat/completions')) {
+                    if (!url.endsWith('/v1')) url += '/v1';
+                    url += '/chat/completions';
+                }
 
-        async function generateAIScene(lastAction) {
-            const loading = document.getElementById('ai-loading');
-            loading.classList.remove('hidden');
-            
-            // 构建上下文
-            const context = {
-                state: gameState,
-                members_top3: members.sort((a,b)=>b.score-a.score).slice(0,3).map(m=>`${m.name}(${m.score})`),
-                last_action: lastAction,
-                history_summary: gameState.history.slice(-3).join(" -> ") // 简化的历史
-            };
-
-            const messages = [
-                { role: "system", content: SYSTEM_PROMPT },
-                { role: "user", content: `当前状态 JSON: ${JSON.stringify(context)}. 玩家刚执行了操作: "${lastAction}". 请生成下一幕。` }
-            ];
-
-            try {
-                const response = await fetch(apiConfig.url + '/chat/completions', {
+                const res = await fetch(url, {
                     method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'Authorization': `Bearer ${apiConfig.key}`
-                    },
+                    headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${this.config.apiKey}` },
                     body: JSON.stringify({
-                        model: apiConfig.model || 'gpt-3.5-turbo',
-                        messages: messages,
-                        temperature: 0.7
+                        model: this.config.model,
+                        messages: [{ role: 'user', content: prompt }],
+                        temperature: 0.7,
+                        stream: false
                     })
                 });
-
-                const data = await response.json();
-                const content = data.choices[0].message.content;
                 
-                // 尝试提取JSON
-                let jsonStr = content;
-                // 有时候模型会包裹 markdown
-                if (content.includes('```json')) {
-                    jsonStr = content.split('```json')[1].split('```')[0];
-                } else if (content.includes('```')) {
-                    jsonStr = content.split('```')[1].split('```')[0];
+                if (!res.ok) {
+                    const t = await res.text();
+                    let msg = `API Error ${res.status}`;
+                    if (res.status === 401) msg = "Key 无效或过期 (401)";
+                    else if (res.status === 404) msg = "接口地址错误 (404)";
+                    throw new Error(msg);
                 }
-
-                const sceneData = JSON.parse(jsonStr.trim());
                 
-                // 渲染AI生成的场景
-                renderSceneUI(sceneData, true); // true 表示是AI生成的
+                const json = await res.json();
+                return this.extractJSON(json.choices[0].message.content);
+            },
 
-            } catch (error) {
-                console.error("AI Generation Error", error);
-                alert("AI 生成失败，请检查API设置或网络。将尝试回退到默认流程。");
-                // 出错处理...
-            } finally {
-                loading.classList.add('hidden');
-            }
-        }
-
-        function renderSceneUI(sceneData, isAI = false) {
-            document.getElementById('scene-title').innerText = sceneData.title;
-            document.getElementById('turn-count').innerText = `第 ${gameState.day} 天`;
-
-            // 归档旧文本
-            const currentStory = document.getElementById('current-story');
-            if (currentStory.innerHTML.trim() !== '') {
-                const historyDiv = document.createElement('div');
-                historyDiv.className = 'text-sm text-gray-400 border-l-2 border-gray-200 pl-2 pb-2 mb-2';
-                historyDiv.innerHTML = currentStory.innerHTML;
-                document.getElementById('story-log').appendChild(historyDiv);
-                document.getElementById('story-log').classList.remove('hidden');
-            }
-
-            // 打字机显示新文本
-            // 如果是AI生成的markdown，可以在这里用 marked() 转换，如果是HTML直接用
-            // 假设AI返回的是HTML或Text
-            typeWriter('current-story', sceneData.text);
-
-            // 社交评论
-            if (sceneData.social_comment) {
-                addSocialComment(sceneData.social_comment.user, sceneData.social_comment.content);
-            }
-
-            // 生成选项
-            const choicesContainer = document.getElementById('choices-container');
-            choicesContainer.innerHTML = '';
-            
-            sceneData.options.forEach(opt => {
-                const btn = document.createElement('button');
-                btn.className = 'choice-btn w-full p-4 rounded-lg flex flex-col';
-                btn.innerHTML = `
-                    <span class="font-bold text-gray-800 mb-1">${opt.text}</span>
-                    <span class="text-xs text-emerald-600 font-medium bg-emerald-50 px-2 py-0.5 rounded w-max">后果: ${opt.desc}</span>
-                `;
+            // --- 极速流畅打字机 ---
+            typewriter(html, element, onComplete) {
+                if (this.typewriterTimer) clearInterval(this.typewriterTimer);
                 
-                // 绑定点击事件
-                btn.onclick = () => {
-                    // 1. 应用数值影响
-                    applyEffect(opt.effect);
-                    // 2. 推进进度
-                    gameState.day += 1;
-                    gameState.history.push(sceneData.title);
-                    
-                    // 3. 处理特殊动作或下一幕
-                    if (opt.action) {
-                        opt.action();
-                    } else {
-                        // 传入next ID (如果是固定) 或者 传入当前选择文本让AI生成下一幕
-                        const nextId = opt.next || 'ai_gen';
-                        processScene(nextId, opt.text); 
+                this.currentFullHtml = html;
+                this.onTypewriterComplete = onComplete;
+                this.isTyping = true;
+
+                let cursor = 0;
+                element.innerHTML = "";
+                element.classList.add('typewriter-cursor');
+
+                // 速度优化：每 5ms 执行一次，每次增加 1-2 个字符，极速且流畅
+                this.typewriterTimer = setInterval(() => {
+                    if (cursor >= html.length) {
+                        this.finishTyping();
+                        return;
                     }
-                };
-                choicesContainer.appendChild(btn);
-            });
-        }
 
-        function applyEffect(effect) {
-            if (!effect) return;
-            if (effect.land) gameState.land += effect.land;
-            if (effect.build) gameState.build += effect.build;
-            if (effect.brand) gameState.brand += effect.brand;
-            if (effect.money) gameState.money += effect.money;
-            if (effect.season) gameState.seasonProgress += effect.season;
-            if (effect.ipo) gameState.ipoProgress += effect.ipo;
-            
-            if (effect.members) {
-                effect.members.forEach(m => {
-                    updateMember(m.id, m.delta);
+                    // 每次渲染 2 个字符，提升速度
+                    for(let i=0; i<2; i++) {
+                        if (cursor >= html.length) break;
+                        const char = html.charAt(cursor);
+                        
+                        // 标签跳过逻辑
+                        if (char === '<') {
+                            const closeIdx = html.indexOf('>', cursor);
+                            if (closeIdx !== -1) {
+                                element.innerHTML += html.substring(cursor, closeIdx + 1);
+                                cursor = closeIdx + 1;
+                                continue;
+                            }
+                        } else if (char === '&') {
+                             const semiIdx = html.indexOf(';', cursor);
+                             if (semiIdx !== -1 && semiIdx - cursor < 10) {
+                                 element.innerHTML += html.substring(cursor, semiIdx + 1);
+                                 cursor = semiIdx + 1;
+                                 continue;
+                             }
+                        }
+                        
+                        element.innerHTML += char;
+                        cursor++;
+                    }
+                    
+                }, 5); // 极速模式：5ms
+            },
+
+            finishTyping() {
+                if (this.typewriterTimer) clearInterval(this.typewriterTimer);
+                this.isTyping = false;
+                const textBox = document.getElementById('story-content');
+                textBox.innerHTML = this.currentFullHtml;
+                textBox.classList.remove('typewriter-cursor');
+                if (this.onTypewriterComplete) this.onTypewriterComplete();
+                this.onTypewriterComplete = null;
+            },
+
+            tryFastForward() {
+                if (this.isTyping) {
+                    this.finishTyping();
+                }
+            },
+
+            renderTurn(data) {
+                document.getElementById('story-title').innerText = data.title;
+                const fullHtml = marked.parse(data.story);
+                const textBox = document.getElementById('story-content');
+                const cBox = document.getElementById('choices-container');
+                const dBox = document.getElementById('danmu-container');
+                
+                // 清空并准备开始
+                textBox.innerHTML = '';
+                cBox.innerHTML = '';
+                dBox.innerHTML = '';
+
+                // 开始打字
+                this.typewriter(fullHtml, textBox, () => {
+                    // 打字完成后显示选项
+                    data.choices.forEach((c, idx) => {
+                        const btn = document.createElement('button');
+                        btn.className = "choice-btn w-full p-4 rounded-xl text-left bg-white shadow-sm flex justify-between items-center group mb-3";
+                        btn.innerHTML = `
+                            <span class="font-bold text-gray-700 text-sm group-hover:text-emerald-700">${c.text}</span>
+                            <span class="text-xs bg-gray-100 text-gray-500 px-2 py-1 rounded group-hover:bg-emerald-100">${c.hint}</span>
+                        `;
+                        btn.onclick = () => this.handleChoice(c);
+                        cBox.appendChild(btn);
+                        
+                        setTimeout(() => btn.classList.add('show'), idx * 100);
+                    });
+
+                    // 显示弹幕
+                    if(data.danmu) {
+                        data.danmu.forEach(d => {
+                            const row = document.createElement('div');
+                            row.className = "bg-white p-2 rounded border border-gray-100 shadow-sm flex gap-2 items-start mb-2";
+                            const color = ['text-blue-600','text-purple-600','text-pink-600'][Math.floor(Math.random()*3)];
+                            row.innerHTML = `<span class="font-bold ${color} whitespace-nowrap">${d.u}:</span><span class="text-gray-600 leading-tight">${d.c}</span>`;
+                            dBox.appendChild(row);
+                        });
+                    }
                 });
+            },
+
+            handleChoice(c) {
+                if (c.impact) {
+                    const i = c.impact;
+                    if(i.funds) this.state.funds += i.funds;
+                    if(i.land) this.state.land += i.land;
+                    if(i.build) this.state.build += i.build;
+                    if(i.brand) this.state.brand += i.brand;
+                    if(i.aff && i.aff.all) MEMBERS.forEach(m => this.state.members[m.id] += i.aff.all);
+                }
+                this.state.day++;
+                this.updateUI();
+                this.generateNextTurn(c);
+            },
+
+            updateUI() {
+                const fundsText = (this.state.funds/10000).toFixed(1) + 'w';
+                const fundsClass = `font-bold ${this.state.funds >= 0 ? 'text-red-500' : 'text-green-600'} text-lg font-mono`;
+
+                const deskFunds = document.getElementById('val-funds');
+                if (deskFunds) { deskFunds.innerText = fundsText; deskFunds.className = fundsClass; }
+
+                const mobileFunds = document.getElementById('val-funds-m');
+                if (mobileFunds) { mobileFunds.innerText = fundsText; mobileFunds.className = `font-bold text-sm font-mono ${this.state.funds >= 0 ? 'text-red-500' : 'text-green-600'}`; }
+
+                const updateStat = (id, val, suffix) => {
+                    const pct = Math.min(100, val);
+                    const t = document.getElementById(`txt-${id}${suffix}`);
+                    const b = document.getElementById(`bar-${id}${suffix}`);
+                    const v = document.getElementById(`val-${id}${suffix}`);
+                    if(t) t.innerText = val;
+                    if(b) b.style.width = pct + '%';
+                    if(v) v.innerText = val;
+                };
+
+                updateStat('land', this.state.land, '');
+                updateStat('build', this.state.build, '');
+                updateStat('brand', this.state.brand, '');
+                updateStat('season', this.state.seasonProgress, '');
+                updateStat('ipo', this.state.ipoProgress, '');
+
+                updateStat('land', this.state.land, '-m');
+                updateStat('build', this.state.build, '-m');
+                updateStat('brand', this.state.brand, '-m');
+
+                document.getElementById('game-date').innerText = `S1 · Day ${this.state.day}`;
+
+                const list = document.getElementById('members-list');
+                if (list) {
+                    list.innerHTML = '';
+                    MEMBERS.forEach(m => {
+                        const v = this.state.members[m.id];
+                        const div = document.createElement('div');
+                        div.className = "flex-shrink-0 md:w-full flex md:flex-row flex-col items-center gap-2 p-2 bg-gray-50 rounded-lg md:justify-start min-w-[60px]";
+                        div.innerHTML = `
+                            <div class="w-8 h-8 rounded-full ${m.color} flex items-center justify-center text-white text-xs font-bold shadow-sm">${m.name[0]}</div>
+                            <div class="flex-1 w-full md:w-auto text-center md:text-left">
+                                <div class="text-xs font-bold text-gray-700 truncate">${m.name}</div>
+                                <div class="w-full bg-gray-200 h-1 mt-1 rounded-full overflow-hidden"><div class="bg-pink-400 h-1" style="width:${v}%"></div></div>
+                            </div>
+                        `;
+                        list.appendChild(div);
+                    });
+                }
+            },
+
+            setLoading(loading) {
+                const ind = document.getElementById('loading-indicator');
+                const cBox = document.getElementById('choices-container');
+                const title = document.getElementById('story-title');
+                
+                if(loading) {
+                    if (ind) ind.classList.remove('hidden');
+                    if (cBox) cBox.classList.add('opacity-50', 'pointer-events-none');
+                    if (title) title.innerText = "生成剧情中...";
+                } else {
+                    if (ind) ind.classList.add('hidden');
+                    if (cBox) cBox.classList.remove('opacity-50', 'pointer-events-none');
+                }
             }
-            if (effect.all) updateAllMembers(effect.all);
+        };
 
-            renderStats();
-        }
-
-        function updateMember(id, delta) {
-            const member = members.find(m => m.id === id);
-            if (member) {
-                member.score = Math.min(100, Math.max(0, member.score + delta));
-            }
-            renderMembers();
-        }
-
-        function updateAllMembers(delta) {
-            members.forEach(m => {
-                m.score = Math.min(100, Math.max(0, m.score + delta));
-            });
-            renderMembers();
-        }
-
-        function addSocialComment(user, text) {
-            const feed = document.getElementById('social-feed');
-            const div = document.createElement('div');
-            div.className = 'bg-white p-3 rounded shadow-sm border border-gray-100 text-sm fade-in';
-            div.innerHTML = `<div class="font-bold text-gray-600 mb-1">${user}</div><div class="text-gray-500">${text}</div>`;
-            feed.prepend(div);
-            if (feed.children.length > 5) feed.lastChild.remove();
-        }
-
-        // --- UI 渲染 ---
-        function renderStats() {
-            document.getElementById('stat-land').innerText = gameState.land;
-            document.getElementById('bar-land').style.width = Math.min(100, (gameState.land / 300 * 100)) + '%';
-
-            document.getElementById('stat-build').innerText = gameState.build;
-            document.getElementById('bar-build').style.width = Math.min(100, (gameState.build / 300 * 100)) + '%';
-
-            document.getElementById('stat-brand').innerText = gameState.brand;
-            document.getElementById('bar-brand').style.width = Math.min(100, (gameState.brand / 300 * 100)) + '%';
-
-            const moneyFormatter = new Intl.NumberFormat('zh-CN', { style: 'currency', currency: 'CNY', maximumFractionDigits: 0 });
-            const moneyEl = document.getElementById('stat-money');
-            moneyEl.innerText = moneyFormatter.format(gameState.money);
-            moneyEl.className = gameState.money < 0 ? 'text-xl font-bold text-red-500' : 'text-xl font-bold text-emerald-600';
-
-            document.getElementById('bar-season').style.width = Math.min(100, gameState.seasonProgress) + '%';
-            document.getElementById('text-season').innerText = gameState.seasonProgress + '%';
-
-            document.getElementById('bar-ipo').style.width = Math.min(100, gameState.ipoProgress) + '%';
-            document.getElementById('text-ipo').innerText = gameState.ipoProgress + '%';
-        }
-
-        function renderMembers() {
-            const container = document.getElementById('members-list');
-            container.innerHTML = '';
-            const sortedMembers = [...members].sort((a, b) => b.score - a.score);
-
-            sortedMembers.forEach(m => {
-                const item = document.createElement('div');
-                item.className = 'flex items-center gap-3 p-2 hover:bg-gray-50 rounded transition';
-                item.innerHTML = `
-                    <div class="avatar-circle ${m.color}">${m.name.charAt(0)}</div>
-                    <div class="flex-1">
-                        <div class="flex justify-between items-center mb-1">
-                            <span class="text-sm font-bold text-gray-700">${m.name} <span class="text-xs font-normal text-gray-400">(${m.role})</span></span>
-                            <span class="text-xs text-gray-500">${m.score}</span>
-                        </div>
-                        <div class="stat-bar-bg h-1.5"><div class="stat-bar-fill ${m.color}" style="width: ${m.score}%"></div></div>
-                    </div>
-                `;
-                container.appendChild(item);
-            });
-        }
-
-        // --- 设置弹窗逻辑 ---
-        function openSettings() {
-            document.getElementById('settings-modal').classList.remove('hidden');
-        }
-
-        function closeSettings() {
-            document.getElementById('settings-modal').classList.add('hidden');
-        }
-
-        function saveSettings() {
-            apiConfig.url = document.getElementById('api-url').value;
-            apiConfig.key = document.getElementById('api-key').value;
-            apiConfig.model = document.getElementById('api-model').value;
-            
-            localStorage.setItem('sg_api_config', JSON.stringify(apiConfig));
-            closeSettings();
-            alert('配置已保存！下一轮操作将尝试使用 AI 生成剧情。');
-        }
-
-        // 启动
-        initGame();
-
+        window.onload = () => App.init();
     </script>
 </body>
 </html>
